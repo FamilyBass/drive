@@ -13,7 +13,6 @@ RUN go build -ldflags "-s -w" -o /out/server ./
 # Final stage
 FROM scratch
 COPY --from=builder /out/server /server
-COPY --from=builder /src/public/ /public/
 EXPOSE 8080
 VOLUME ["/data","/app/media"]
 ENTRYPOINT ["/server"]
