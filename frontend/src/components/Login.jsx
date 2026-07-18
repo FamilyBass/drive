@@ -29,34 +29,50 @@ export default function Login({ onLogin }) {
         setMode('login')
       }
     } catch (err) {
-      // L'erreur est géré par le hook
+      // L'erreur est gérée par le hook
     }
   }
 
   const displayError = error || localError
 
   return (
-    <div className="container">
-      <h2 className="text-2xl font-semibold mb-6">La Familly Bass — {mode === 'login' ? 'Connexion' : 'Inscription'}</h2>
+    <div className="container min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-2">La Familly Bass</h1>
+          <p className="text-sm text-cyan-300 opacity-80">
+            {mode === 'login' ? 'Connexion' : 'Création de Compte'}
+          </p>
+        </div>
 
-      {displayError && (
-        <Alert type="error" message={displayError} onDismiss={() => setLocalError(null)} />
-      )}
+        <div className="p-6 rounded-lg border-2 border-cyan-500"
+             style={{
+               background: 'rgba(0, 255, 255, 0.05)',
+               boxShadow: '0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 10px rgba(0, 255, 255, 0.1)',
+               backdropFilter: 'blur(10px)'
+             }}>
 
-      <AuthForm
-        mode={mode}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        error={displayError}
-        onModeChange={setMode}
-      />
+          {displayError && (
+            <Alert type="error" message={displayError} onDismiss={() => setLocalError(null)} />
+          )}
 
-      <p className="mt-6 text-xs opacity-70">
-        {mode === 'login'
-          ? 'Inscription ouverte — un admin doit valider le compte.'
-          : 'Un administrateur doit valider votre compte avant de vous connecter.'}
-      </p>
+          <AuthForm
+            mode={mode}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+            error={displayError}
+            onModeChange={setMode}
+          />
+
+          <div className="mt-6 text-center border-t border-green-500/30 pt-4">
+            <p className="text-xs opacity-70 text-green-300">
+              {mode === 'login'
+                ? 'Inscription ouverte — Un admin doit valider le compte.'
+                : 'Un administrateur doit valider votre compte avant de vous connecter.'}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
-

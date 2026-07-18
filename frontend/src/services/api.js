@@ -21,24 +21,37 @@ class APIClient {
       headers['Authorization'] = `Bearer ${this.token}`
     }
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      })
 
-    if (!response.ok) {
-      const text = await response.text()
-      const error = new Error(text || `HTTP ${response.status}`)
-      error.status = response.status
-      throw error
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          // Si la réponse n'est pas JSON, utiliser le texte
+          const text = await response.text()
+          errorMessage = text || errorMessage
+        }
+        const error = new Error(errorMessage)
+        error.status = response.status
+        throw error
+      }
+
+      // Pour les téléchargements, retourner la réponse directement
+      if (options.skipJSON) {
+        return response
+      }
+
+      return response.json()
+    } catch (err) {
+      console.error(`API Error [${endpoint}]:`, err)
+      throw err
     }
-
-    // Pour les téléchargements, retourner la réponse directement
-    if (options.skipJSON) {
-      return response
-    }
-
-    return response.json()
   }
 
   // Auth endpoints
@@ -61,19 +74,24 @@ class APIClient {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await fetch(`${API_BASE}/drive/upload`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-      },
-      body: formData,
-    })
+    try {
+      const response = await fetch(`${API_BASE}/drive/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+        body: formData,
+      })
 
-    if (!response.ok) {
-      throw new Error('Upload failed')
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      return response.json()
+    } catch (err) {
+      console.error('Upload Error:', err)
+      throw err
     }
-
-    return response.json()
   }
 
   async listFiles() {
@@ -98,4 +116,3 @@ class APIClient {
 
 // Instance globale du client API
 export const apiClient = new APIClient()
-

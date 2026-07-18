@@ -12,19 +12,24 @@ export const TextField = ({
 }) => {
   return (
     <div className="mb-4">
-      {label && <label className="block text-sm mb-1">{label}</label>}
+      {label && (
+        <label className="block text-sm mb-2 text-green-300 font-semibold">
+          {label}
+        </label>
+      )}
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className={`w-full p-2 bg-black border text-white ${
-          error ? 'border-red-500' : 'border-white'
+        className={`w-full p-3 rounded transition-all ${
+          error
+            ? 'border-red-500 bg-red-950/20'
+            : 'border-cyan-500 bg-black/50'
         }`}
       />
       {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   )
 }
-

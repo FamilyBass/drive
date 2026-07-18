@@ -29,18 +29,24 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "bad request"})
 		return
 	}
 
 	if req.Email == "" || req.Password == "" {
-		http.Error(w, "email and password required", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "email and password required"})
 		return
 	}
 
 	user, err := h.authService.Register(r.Context(), req.Email, req.Password)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -57,16 +63,24 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "bad request"})
 		return
 	}
 
 	token, err := h.authService.Login(r.Context(), req.Email, req.Password)
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		if strings.Contains(err.Error(), "account not validated") {
-			http.Error(w, "account not validated", http.StatusForbidden)
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"error": "account not validated"})
+		} else if strings.Contains(err.Error(), "not found") {
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"error": "invalid credentials"})
 		} else {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		}
 		return
 	}
@@ -82,16 +96,22 @@ func (h *AuthHandler) ValidateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.UserID == "" {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "bad request"})
 		return
 	}
 
 	if err := h.authService.ValidateUser(r.Context(), req.UserID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
 // ExtractTokenFromHeader extrait le token Bearer du header

@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
 import { Button } from './Button'
 import { TextField } from './TextField'
-import { Alert } from './Alert'
 import { Spinner } from './Spinner'
 
-// Composant pour l'authentification (réutilisable)
 export const AuthForm = ({
   mode = 'login',
   onSubmit,
@@ -23,34 +21,36 @@ export const AuthForm = ({
   }
 
   const isLogin = mode === 'login'
-  const title = isLogin ? 'Se connecter' : 'Create Account'
-  const submitText = isLogin ? 'Se connecter' : "S'enregistrer"
+  const title = isLogin ? 'Se connecter' : 'Créer un compte'
+  const submitText = isLogin ? 'Connexion' : 'S\'enregistrer'
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm">
-      {error && <Alert type="error" message={error} />}
-
+    <form onSubmit={handleSubmit} className="space-y-4">
       <TextField
         label="Email"
         type="email"
         value={email}
         onChange={setEmail}
-        placeholder="Enter your email"
+        placeholder="admin@example.com"
         disabled={isLoading}
       />
 
       <TextField
-        label="Password"
+        label="Mot de passe"
         type="password"
         value={password}
         onChange={setPassword}
-        placeholder="Enter your password"
+        placeholder="••••••••"
         disabled={isLoading}
       />
 
-      <div className="flex gap-2">
-        <Button type="submit" disabled={isLoading || !email || !password}>
-          {isLoading ? 'Processing...' : submitText}
+      <div className="flex gap-3 pt-4">
+        <Button
+          type="submit"
+          disabled={isLoading || !email || !password}
+          className="flex-1"
+        >
+          {isLoading ? 'Traitement...' : submitText}
         </Button>
 
         {onModeChange && (
@@ -59,14 +59,14 @@ export const AuthForm = ({
             variant="secondary"
             disabled={isLoading}
             onClick={() => onModeChange(isLogin ? 'register' : 'login')}
+            className="flex-1"
           >
-            {isLogin ? "S'enregistrer" : 'Se connecter'}
+            {isLogin ? 'S\'enregistrer' : 'Se connecter'}
           </Button>
         )}
       </div>
 
-      {isLoading && <Spinner text="Please wait..." />}
+      {isLoading && <Spinner text="Veuillez patienter..." />}
     </form>
   )
 }
-
