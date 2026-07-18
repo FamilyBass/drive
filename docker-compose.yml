@@ -13,9 +13,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./data:/data
-      - ./data/media:/app/media
-
+      - drive-data:/data
   frontend:
     image: delmat238/familybass-drive-frontend:latest
     restart: unless-stopped
@@ -25,5 +23,4 @@ services:
       - backend
 
 volumes:
-  media:
-    driver: local
+  drive-data:
