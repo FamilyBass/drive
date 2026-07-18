@@ -22,6 +22,7 @@ func Services(userRepo domrepo.UserRepository, fileRepo domrepo.FileRepository) 
 	// Créer l'admin initial si les variables d'environnement sont définies
 	adminEmail := os.Getenv("ADMIN_EMAIL")
 	adminPass := os.Getenv("ADMIN_PASSWORD")
+	log.Printf("admin email: %s, admin password: %s", adminEmail, adminPass)
 	if adminEmail != "" && adminPass != "" {
 		ctx := context.Background()
 		if err := authService.EnsureAdmin(ctx, adminEmail, adminPass); err != nil {
