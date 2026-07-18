@@ -1,4 +1,4 @@
-module familybass/backend
+module github.com/familybass/drive
 
 go 1.21
 
