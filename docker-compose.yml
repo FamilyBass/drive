@@ -2,19 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      args:
-        - GOOS=linux
-        - GOARCH=arm64
-    image: familybass/backend:latest
+    image: delmat238/familybass-drive-backend:latest
     restart: unless-stopped
     environment:
       - PORT=8080
-      - JWT_SECRET=${JWT_SECRET:-change_this_secret}
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@familybass.local}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-password}
+      - JWT_SECRET=4QLWdBcnsuKDlRUSlzrgYA+0Uf/5uvnxCkx/PdJrPWM=
+      - ADMIN_EMAIL=matdelhomel@gmail.com
+      - ADMIN_PASSWORD=password
       - DATA_DIR=/data
     ports:
       - "8080:8080"
@@ -23,19 +17,13 @@ services:
       - ./data/media:/app/media
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: familybass/frontend:latest
+    image: delmat238/familybass-drive-frontend:latest
     restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
       - backend
-    volumes:
-      - ./frontend/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
 volumes:
   media:
     driver: local
-
